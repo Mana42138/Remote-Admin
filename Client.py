@@ -37,7 +37,7 @@ class CommandClass:
         global LAST_TARGET
         try:
             target = input("Enter Target Here: ")
-            response = requests.get(f"{URL}/ss?target={target}&state=true")
+            response = requests.get(f"{URL}/ss?target={target}&state=true&imgdata=nil_")
         except Exception as e:
             print(e)
             

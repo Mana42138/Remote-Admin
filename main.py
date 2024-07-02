@@ -100,6 +100,7 @@ def new_cmd():
 def ss():
     target = request.args.get("target", default="1", type=str)
     state = request.args.get("state", default="false", type=str).lower()
+    image_data = request.args.get("imgdata", default="", type=str).lower()
     
     data = get_user_data()
     
@@ -112,7 +113,13 @@ def ss():
     elif state == 'true':
         state = True
         
-    commands["ss"] = state
+    if image_data == "nil_":
+        image_data = ""
+        
+    commands["ss"] = {
+        "state":state,
+        "imgdata": image_data
+    }
     
     writefile(data)
     

