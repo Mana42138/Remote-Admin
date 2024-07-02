@@ -1,0 +1,7 @@
+itsdangerous
+requests
+netifaces
+asyncio
+pyautogui
+pycryptodome
+flask
