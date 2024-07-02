@@ -33,7 +33,7 @@ When you run `setup.bat` on any PC, it configures that PC as a client (referred 
 Python and the required packages will be installed automatically during the setup process!
 
 ### Q&A
----
+----
 Q: Why do you only use GET requests?
 
 A: I use GET requests because some computers have restrictions that prevent POST requests from working properly. To avoid these compatibility issues, I opted for GET requests.
