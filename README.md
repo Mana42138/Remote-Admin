@@ -38,3 +38,5 @@ Q: Why do you only use GET requests?
 
 A: I use GET requests because some computers have restrictions that prevent POST requests from working properly. To avoid these compatibility issues, I opted for GET requests.
 ---
+
+all though you could just use a ssh server now that i think about it oh well :)
